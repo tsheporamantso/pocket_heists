@@ -1,25 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "tailwindcss";
 
 /* theme colours */
 @theme {
-  --color-primary: #C27AFF;
-  --color-secondary: #FB64B6;
+  --color-primary: #c27aff;
+  --color-secondary: #fb64b6;
   --color-dark: #030712;
-  --color-light: #0A101D;
+  --color-light: #0a101d;
   --color-lighter: #101828;
-  --color-success: #05DF72;
-  --color-error: #FF6467;
+  --color-success: #05df72;
+  --color-error: #ff6467;
   --color-heading: white;
-  --color-body: #99A1AF;
-  --font-sans: 'Inter', sans-serif;
+  --color-body: #99a1af;
+  --font-sans: "Inter", sans-serif;
 }
 
 /* typography */
 body {
- @apply font-sans text-body bg-dark;
+  @apply font-sans text-body bg-dark;
 }
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   @apply text-heading;
 }
 
