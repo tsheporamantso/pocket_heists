@@ -1,0 +1,37 @@
+@reference "../../app/globals.css";
+
+.form {
+  @apply mx-auto my-6 flex w-full max-w-sm flex-col gap-4 rounded-lg bg-light p-6;
+}
+
+.field {
+  @apply flex flex-col gap-1;
+}
+
+.label {
+  @apply text-sm font-semibold text-body;
+}
+
+.inputWrap {
+  @apply relative;
+}
+
+.input {
+  @apply w-full rounded-lg border border-lighter bg-lighter px-3 py-2 text-heading placeholder:text-body;
+}
+
+.input:focus {
+  @apply border-primary outline-none;
+}
+
+.toggle {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 text-body transition-colors hover:text-heading;
+}
+
+.switch {
+  @apply text-center text-sm text-body;
+}
+
+.link {
+  @apply font-semibold text-primary transition-colors hover:text-secondary;
+}

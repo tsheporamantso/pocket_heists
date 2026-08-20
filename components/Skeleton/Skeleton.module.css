@@ -1,0 +1,54 @@
+@reference "../../app/globals.css";
+
+.card {
+  @apply flex flex-col gap-3 rounded-lg bg-light p-4;
+}
+
+.row {
+  @apply flex items-center gap-3;
+}
+
+.avatar {
+  @apply h-12 w-12 shrink-0 rounded-full bg-lighter;
+}
+
+.lines {
+  @apply flex flex-1 flex-col gap-2;
+}
+
+.line {
+  @apply h-3 rounded bg-lighter;
+}
+
+.lineShort {
+  width: 40%;
+}
+
+.lineMedium {
+  width: 70%;
+}
+
+.lineLong {
+  width: 100%;
+}
+
+.bottom {
+  @apply flex flex-col gap-2;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.avatar,
+.line {
+  animation: shimmer 1.5s ease-in-out infinite;
+}
