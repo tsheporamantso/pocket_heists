@@ -4,33 +4,42 @@ Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS v4. Early-stage p
 
 ## Commands
 
-- `npm run dev` — dev server at localhost:3000
-- `npm run build` — production build
-- `npm run lint` — ESLint (flat config, next core-web-vitals + typescript)
-- `npm test` — Vitest (single run); `npx vitest` for watch mode
+PowerShell execution policy blocks `npm`/`npx` — always run via cmd: `cmd /c "npm run dev"`, `cmd /c "npx vitest run ..."`.
 
-No separate typecheck command; `npm run build` runs tsc. `npm run lint` does not type-check.
+- `cmd /c "npm run dev"` — dev server at localhost:3000
+- `cmd /c "npm run build"` — production build (runs tsc typecheck)
+- `cmd /c "npm run lint"` — ESLint only; does NOT type-check (can take 2+ min)
+- `cmd /c "npx vitest run"` — tests, single run
+- Single test file: `cmd /c "npx vitest run tests/components/ComponentName.test.tsx"`
 
-## Commit hooks
+Coverage is NOT available: `@vitest/coverage-v8` is not installed, so `--coverage` fails.
+
+## Commit workflow
 
 Husky runs on commit:
-- **pre-commit**: `npm test` — tests must pass before commit.
-- **commit-msg**: commitlint enforces [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `feat:`, `fix:`, `chore:`).
+- **pre-commit**: `npm test` — tests must pass.
+- **commit-msg**: commitlint enforces Conventional Commits, but the config allows an optional emoji prefix (e.g. `✨ feat: ...` or `feat: ...` both pass). Use the emoji format from `/commit-message`.
 
-## Project structure
+Repo-local slash commands (`.opencode/commands/`):
+- `/component <desc>` — TDD component workflow: write test first in `tests/components/`, run expecting failure, build component, run expecting pass, then add a preview on `/preview`.
+- `/spec <idea>` — requires a CLEAN working tree (commit/stash first, it aborts otherwise). Creates a `opencode/feature/<slug>` branch and writes a spec to `_specs/<slug>.md` from `_specs/template.md`.
+- `/commit-message` — proposes a commit message from staged changes; asks before committing.
+- `/test` — runs the suite; note coverage will fail (see above).
 
-Route groups separate public vs authenticated pages without affecting URLs:
+## Structure
 
-- `app/(public)/` — no auth, no Navbar. Contains: splash (`/`), `/login`, `/signup`, `/preview`.
-- `app/(dashboard)/` — authenticated pages, wrapped with `<Navbar />`. Contains: `/heists`, `/heists/create`, `/heists/[id]`.
-- `components/` — shared components: `Navbar`, `Skeleton`.
-- `tests/` — mirrors component structure (`tests/components/Navbar.test.tsx`).
+- `app/(public)/` — no auth, no Navbar: splash `/`, `/login`, `/signup`, `/preview`. `/preview` is the UI gallery for new components.
+- `app/(dashboard)/` — authenticated pages wrapped with `<Navbar />`: `/heists`, `/heists/create`, `/heists/[id]` (dynamic route — `params` is a Promise, `await` it).
+- `components/<Name>/` — one folder per component: `<Name>.tsx`, `<Name>.module.css`, `index.ts` barrel. Current: `Navbar`, `Skeleton`, `Avatar`, `AuthForm`.
+- `tests/components/` — mirrors components (`Navbar.test.tsx`, `Avatar.test.tsx`, `AuthForm.test.tsx`).
+- `_specs/` — feature specs (see `/spec`). `_plans/` — implementation plans.
 
 ## Conventions
 
-- Path alias: `@/*` maps to project root (use `@/components/...`, `@/app/...`).
-- Tailwind v4: theme defined via `@theme` in `app/globals.css` (no `tailwind.config`). Custom colors: `primary`, `secondary`, `dark`, `light`, `lighter`, `success`, `error`, `heading`, `body`.
-- Global utility classes: `.center-content`, `.page-content`, `.form-title`, `.public`, `.btn` — defined in `globals.css`.
-- Components use CSS Modules (e.g. `Navbar.module.css`).
-- **CSS Modules + Tailwind v4**: Tailwind utility classes (including custom `@theme` colors like `bg-light`) won't work in CSS Modules unless you add `@reference "../../app/globals.css";` at the top of the file. Without it you'll get `Cannot apply unknown utility class` errors. See `Navbar.module.css` for the pattern.
-- Tests use Vitest + `@testing-library/react` with `jsdom` environment. Vitest globals enabled (no need to import `describe`/`it`/`expect` in new tests, though existing tests do import them explicitly — follow whichever pattern the file you're editing uses).
+- Path alias: `@/*` maps to project root.
+- Tailwind v4: theme via `@theme` in `app/globals.css` (no `tailwind.config`). Colors: `primary`, `secondary`, `dark`, `light`, `lighter`, `success`, `error`, `heading`, `body`.
+- Global utility classes in `globals.css`: `.page-content`, `.center-content`, `.form-title`, `.public`, `.btn`.
+- **CSS Modules + Tailwind v4 gotcha**: any utility class (incl. theme colors like `bg-light`) in a `.module.css` requires `@reference "../../app/globals.css";` at the top, or the build fails with `Cannot apply unknown utility class`. Copy the pattern from `Navbar.module.css`.
+- Style: no semicolons in `.tsx`/`.ts` (CSS files use them). `"use client"` for stateful components.
+- Client components read route params via `useParams()` from `next/navigation`; server components `await` the `params` Promise prop.
+- Tests: Vitest + Testing Library, jsdom, globals enabled. Existing tests import `describe/it/expect` explicitly — match the file you're editing. For `getByLabelText`, password inputs: the visibility-toggle button's `aria-label` also contains "password", so use an exact string (`getByLabelText("Password")`) not a regex.
