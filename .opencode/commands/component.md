@@ -1,7 +1,7 @@
 ---
 description: Create a UI component using TDD (test-driven development)
 allowed-tools: Read, Write, Edit, Glob, Bash(npm test:*), Bash(npx vitest:*)
-argument-hint: [Brief description]
+argument-hint: "[Brief description]"
 ---
 
 ## User Input

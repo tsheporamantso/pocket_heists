@@ -4,7 +4,7 @@ allowed-tools: Read, Write, Glob, Bash(git switch:*)
 argument-hint: Short feature description
 ---
 
-You are helping to spin up a new feature spec for this application, from a short idea provided in the user input below. Always adhere to any rules or requirements se out in any AGENTS.md files when responding.
+You are helping to spin up a new feature spec for this application, from a short idea provided in the user input below. Always adhere to any rules or requirements set out in any AGENTS.md files when responding.
 
 User input: $ARGUMENTS
 
@@ -13,7 +13,7 @@ User input: $ARGUMENTS
 Your job will be to turn the user input above into:
 
 - A human friendly feature title in kebab-case (e.g. new-heist-form)
-- A safe git branch name not already taken (e.g. feature/new-heist-form)
+- A safe git branch name not already taken (e.g. opencode/feature/new-heist-form)
 - A detailed markdown spec file under \_spec/ directory
 
 Then save the spec file to disk and print a short summary of what you did.
@@ -43,14 +43,14 @@ From `$ARGUMENTS`, extract:
    - Example: `card-component` or `card-component-dashboard`.
 
 3. `branch_name`
-   - Format: `claude/feature/<feature_slug>`
-   - Example: `claude/feature/card-component`.
+   - Format: `opencode/feature/<feature_slug>`
+   - Example: `opencode/feature/card-component`.
 
 If you cannot infer a sensible `feature_title` and `feature_slug`, ask the user to clarify instead of guessing.
 
 ## Step 3. Switch to a new Git branch
 
-Before making any content, switch to a new Git branch using the `branch_name` derived from the `$ARGUMENTS`. If the branch name is already taken, then append a version number to it: e.g. `claude/feature/card-component-01`
+Before making any content, switch to a new Git branch using the `branch_name` derived from the `$ARGUMENTS`. If the branch name is already taken, then append a version number to it: e.g. `opencode/feature/card-component-01`
 
 ## Step 4. Draft the spec content
 

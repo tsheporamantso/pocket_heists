@@ -3,6 +3,7 @@
   "permission": {
     "webfetch": "allow",
     "websearch": "allow",
-    "bash": "allow"
+    "bash": "allow",
+    "question": "allow"
   }
 }
