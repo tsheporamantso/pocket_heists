@@ -5,7 +5,11 @@ import type { User, UserCredential } from "firebase/auth"
 
 // component imports
 import AuthForm from "@/components/AuthForm"
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 
 const { push: pushMock } = vi.hoisted(() => ({ push: vi.fn() }))
@@ -13,6 +17,7 @@ const { push: pushMock } = vi.hoisted(() => ({ push: vi.fn() }))
 vi.mock("@/lib/firebase", () => ({ auth: {}, db: {} }))
 vi.mock("firebase/auth", () => ({
   createUserWithEmailAndPassword: vi.fn(),
+  signInWithEmailAndPassword: vi.fn(),
   updateProfile: vi.fn(),
 }))
 vi.mock("firebase/firestore", () => ({
@@ -23,7 +28,11 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
 }))
 
-const fakeUser = { uid: "uid-123", email: "jane@example.com" } as unknown as User
+const fakeUser = {
+  uid: "uid-123",
+  email: "jane@example.com",
+  displayName: "SilentCrimsonFox",
+} as unknown as User
 const credential = { user: fakeUser } as unknown as UserCredential
 
 describe("AuthForm", () => {
@@ -31,6 +40,7 @@ describe("AuthForm", () => {
     vi.spyOn(console, "log").mockImplementation(() => {})
     pushMock.mockReset()
     vi.mocked(createUserWithEmailAndPassword).mockResolvedValue(credential)
+    vi.mocked(signInWithEmailAndPassword).mockResolvedValue(credential)
     vi.mocked(updateProfile).mockResolvedValue(undefined)
     vi.mocked(setDoc).mockResolvedValue(undefined)
   })
@@ -59,7 +69,7 @@ describe("AuthForm", () => {
     )
   })
 
-  it("logs entered details to the console on submit", async () => {
+  it("signs the user in and shows a welcome message on login", async () => {
     const user = userEvent.setup()
     render(<AuthForm mode="login" />)
 
@@ -67,11 +77,36 @@ describe("AuthForm", () => {
     await user.type(screen.getByLabelText("Password"), "secret123")
     await user.click(screen.getByRole("button", { name: /login/i }))
 
-    expect(console.log).toHaveBeenCalledWith({
-      mode: "login",
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      /welcome back, silentcrimsonfox/i
+    )
+    expect(signInWithEmailAndPassword).toHaveBeenCalledWith(
+      {},
+      "jane@example.com",
+      "secret123"
+    )
+    expect(pushMock).not.toHaveBeenCalled()
+  })
+
+  it("shows a plain welcome message when the user has no display name", async () => {
+    const noNameUser = {
+      uid: "uid-123",
       email: "jane@example.com",
-      password: "secret123",
-    })
+      displayName: null,
+    } as unknown as User
+    vi.mocked(signInWithEmailAndPassword).mockResolvedValue({
+      user: noNameUser,
+    } as unknown as UserCredential)
+    const user = userEvent.setup()
+    render(<AuthForm mode="login" />)
+
+    await user.type(screen.getByLabelText(/email/i), "jane@example.com")
+    await user.type(screen.getByLabelText("Password"), "secret123")
+    await user.click(screen.getByRole("button", { name: /login/i }))
+
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      /^Welcome back!$/
+    )
   })
 
   it("toggles the password visibility when the toggle is clicked", async () => {
@@ -172,5 +207,46 @@ describe("AuthForm", () => {
     resolveSignup(credential)
     await waitFor(() => expect(button).toBeEnabled())
     expect(pushMock).toHaveBeenCalledWith("/heists")
+  })
+
+  it("shows an inline error without a success message when login credentials are wrong", async () => {
+    vi.mocked(signInWithEmailAndPassword).mockRejectedValue({
+      code: "auth/invalid-credential",
+    })
+    const user = userEvent.setup()
+    render(<AuthForm mode="login" />)
+
+    await user.type(screen.getByLabelText(/email/i), "jane@example.com")
+    await user.type(screen.getByLabelText("Password"), "wrongpass")
+    await user.click(screen.getByRole("button", { name: /login/i }))
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      /incorrect email or password/i
+    )
+    expect(screen.queryByRole("status")).not.toBeInTheDocument()
+    expect(pushMock).not.toHaveBeenCalled()
+  })
+
+  it("disables the submit button while login is in flight", async () => {
+    let resolveLogin!: (value: UserCredential) => void
+    vi.mocked(signInWithEmailAndPassword).mockImplementation(
+      () =>
+        new Promise<UserCredential>((resolve) => {
+          resolveLogin = resolve
+        })
+    )
+    const user = userEvent.setup()
+    render(<AuthForm mode="login" />)
+
+    await user.type(screen.getByLabelText(/email/i), "jane@example.com")
+    await user.type(screen.getByLabelText("Password"), "secret123")
+    const button = screen.getByRole("button", { name: /login/i })
+    await user.click(button)
+
+    expect(button).toBeDisabled()
+
+    resolveLogin(credential)
+    await waitFor(() => expect(button).toBeEnabled())
+    expect(screen.getByRole("status")).toBeInTheDocument()
   })
 })

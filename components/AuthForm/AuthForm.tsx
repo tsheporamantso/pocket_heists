@@ -4,7 +4,11 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { auth, db } from "@/lib/firebase"
 import { generateCodename } from "@/lib/codename"
@@ -21,6 +25,9 @@ const ERROR_MESSAGES: Record<string, string> = {
     "That email is already registered. Try logging in instead.",
   "auth/invalid-email": "That email address doesn't look right.",
   "auth/weak-password": "Password should be at least 6 characters.",
+  "auth/invalid-credential": "Incorrect email or password.",
+  "auth/user-not-found": "Incorrect email or password.",
+  "auth/wrong-password": "Incorrect email or password.",
   "auth/network-request-failed":
     "Network trouble — check your connection and try again.",
   "auth/operation-not-allowed": "Email sign-up isn't enabled right now.",
@@ -47,6 +54,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const router = useRouter()
 
   const isLogin = mode === "login"
@@ -55,31 +63,40 @@ export default function AuthForm({ mode }: AuthFormProps) {
     event.preventDefault()
     if (isSubmitting) return
     setError(null)
-
-    if (isLogin) {
-      console.log({ mode, email, password })
-      return
-    }
+    setSuccess(null)
 
     setIsSubmitting(true)
     try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
-      const codename = generateCodename()
-      try {
-        await updateProfile(user, { displayName: codename })
-        await setDoc(doc(db, "users", user.uid), { codename, id: user.uid })
-      } catch (err) {
-        console.error("Profile setup failed:", err)
-        setError(SETUP_FAILED_ERROR)
-        return
+      if (isLogin) {
+        const { user } = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        )
+        setSuccess(
+          user.displayName
+            ? `Welcome back, ${user.displayName}!`
+            : "Welcome back!"
+        )
+      } else {
+        const { user } = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        )
+        const codename = generateCodename()
+        try {
+          await updateProfile(user, { displayName: codename })
+          await setDoc(doc(db, "users", user.uid), { codename, id: user.uid })
+        } catch (err) {
+          console.error("Profile setup failed:", err)
+          setError(SETUP_FAILED_ERROR)
+          return
+        }
+        router.push("/heists")
       }
-      router.push("/heists")
     } catch (err) {
-      console.error("Signup failed:", err)
+      console.error(isLogin ? "Login failed:" : "Signup failed:", err)
       setError(ERROR_MESSAGES[getErrorCode(err)] ?? GENERIC_ERROR)
     } finally {
       setIsSubmitting(false)
@@ -134,8 +151,20 @@ export default function AuthForm({ mode }: AuthFormProps) {
         </p>
       )}
 
+      {success && (
+        <p role="status" aria-live="polite" className={styles.success}>
+          {success}
+        </p>
+      )}
+
       <button type="submit" className="btn" disabled={isSubmitting}>
-        {isSubmitting ? "Signing up…" : isLogin ? "Login" : "Sign up"}
+        {isSubmitting
+          ? isLogin
+            ? "Logging in…"
+            : "Signing up…"
+          : isLogin
+            ? "Login"
+            : "Sign up"}
       </button>
 
       <p className={styles.switch}>
