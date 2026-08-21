@@ -32,8 +32,9 @@ Repo-local slash commands (`.opencode/commands/`):
 
 - `app/(public)/` — no auth, no Navbar: splash `/`, `/login`, `/signup`, `/preview`. `/preview` is the UI gallery for new components.
 - `app/(dashboard)/` — authenticated pages wrapped with `<Navbar />`: `/heists`, `/heists/create`, `/heists/[id]` (dynamic route — `params` is a Promise, `await` it).
-- `components/<Name>/` — one folder per component: `<Name>.tsx`, `<Name>.module.css`, `index.ts` barrel. Current: `Navbar`, `Skeleton`, `Avatar`, `AuthForm`.
-- `tests/components/` — mirrors components (`Navbar.test.tsx`, `Avatar.test.tsx`, `AuthForm.test.tsx`).
+- `components/<Name>/` — one folder per component: `<Name>.tsx`, `<Name>.module.css`, `index.ts` barrel. Current: `Navbar`, `Skeleton`, `Avatar`, `AuthForm`, `UserProvider` (no `.module.css`; exports default provider + named `useUser` hook).
+- `tests/components/` — mirrors components (`Navbar.test.tsx`, `Avatar.test.tsx`, `AuthForm.test.tsx`, `UserProvider.test.tsx`).
+- `app/layout.tsx` mounts `<UserProvider>` at the root — read auth state via `useUser()` (`{ user, isLoading }`); don't call Firebase auth directly in pages.
 - `_specs/` — feature specs (see `/spec`). `_plans/` — implementation plans.
 
 ## Conventions
@@ -45,6 +46,7 @@ Repo-local slash commands (`.opencode/commands/`):
 - Style: no semicolons in `.tsx`/`.ts` (CSS files use them). `"use client"` for stateful components.
 - Client components read route params via `useParams()` from `next/navigation`; server components `await` the `params` Promise prop.
 - Tests: Vitest + Testing Library, jsdom, globals enabled. Existing tests import `describe/it/expect` explicitly — match the file you're editing. For `getByLabelText`, password inputs: the visibility-toggle button's `aria-label` also contains "password", so use an exact string (`getByLabelText("Password")`) not a regex.
+- Mocking `firebase/auth` in tests: `onAuthStateChanged(auth, cb)` receives the callback at args index `[1]`, and the mock must RETURN the unsubscribe fn (`mockReturnValue(unsubscribe)`) — calling it inside the implementation silently corrupts setup/cleanup counts.
 
 ## Checking Documentation
 
