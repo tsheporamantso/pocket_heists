@@ -43,8 +43,8 @@ From `$ARGUMENTS`, extract:
    - Example: `card-component` or `card-component-dashboard`.
 
 3. `branch_name`
-   - Format: `claude/feature/<feature_slug>`
-   - Example: `claude/feature/card-component`.
+   - Format: `opencode/feature/<feature_slug>`
+   - Example: `opencode/feature/card-component`.
 
 4. `figma_hint` (optional)
    - If `$ARGUMENTS` contains the substring `figma:`
