@@ -2,6 +2,7 @@
 
 import Skeleton from "@/components/Skeleton";
 import Avatar from "@/components/Avatar";
+import CreateHeistForm from "@/components/CreateHeistForm";
 
 export default function PreviewPage() {
   return (
@@ -16,6 +17,10 @@ export default function PreviewPage() {
         <Avatar name="John" />
         <Avatar name="PascalCase" />
         <Avatar name="Jane Doe" />
+      </div>
+      <div className="my-4">
+        <h3>CreateHeistForm</h3>
+        <CreateHeistForm />
       </div>
     </div>
   );
