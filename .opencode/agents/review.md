@@ -1,6 +1,6 @@
 ---
 description: Review code for quality and best practices
-permissions:
+permission:
   edit: deny
   bash: deny
 ---
