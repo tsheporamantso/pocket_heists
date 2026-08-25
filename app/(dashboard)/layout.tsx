@@ -3,6 +3,7 @@
 // components
 import Navbar from "@/components/Navbar"
 import RouteGuard from "@/components/RouteGuard"
+import Footer from "@/components/Footer"
 
 export default function HeistsLayout({
   children,
@@ -13,6 +14,7 @@ export default function HeistsLayout({
     <RouteGuard require="authenticated">
       <Navbar />
       <main>{children}</main>
+      <Footer />
     </RouteGuard>
   )
 }
