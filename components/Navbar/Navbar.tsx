@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Clock8 } from "lucide-react";
+import { Clock8, LogOut, Plus } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "firebase/auth";
 import { useUser } from "@/components/UserProvider";
@@ -55,13 +55,19 @@ export default function Navbar() {
                 onClick={handleLogout}
                 disabled={isSigningOut}
               >
-                {isSigningOut ? "Logging out…" : "Log out"}
+                <span className="inline-flex items-center gap-1.5">
+                  <LogOut size={16} aria-hidden />
+                  {isSigningOut ? "Logging out…" : "Log out"}
+                </span>
               </button>
             </li>
           )}
           <li>
             <Link href="/heists/create" className="btn">
-              Create Heist
+              <span className="inline-flex items-center gap-1.5">
+                <Plus size={16} aria-hidden />
+                Create Heist
+              </span>
             </Link>
           </li>
         </ul>
