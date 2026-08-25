@@ -28,6 +28,14 @@
   @apply absolute right-3 top-1/2 -translate-y-1/2 text-body transition-colors hover:text-heading;
 }
 
+.error {
+  @apply text-sm text-error;
+}
+
+.success {
+  @apply text-sm text-success;
+}
+
 .switch {
   @apply text-center text-sm text-body;
 }

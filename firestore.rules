@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      // codenames are visible to every signed-in user (assignee picker)
+      allow read: if request.auth != null;
+      // you can only create/update your own profile
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    match /heists/{heistId} {
+      allow read: if request.auth != null;
+      // the signed-in user can only create heists attributed to themselves
+      allow create: if request.auth != null
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.finalStatus == null;
+      // tightened when the heist-update feature ships
+      allow update, delete: if false;
+    }
+  }
+}

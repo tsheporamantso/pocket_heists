@@ -15,3 +15,7 @@
 svg.logo {
   display: inline-block;
 }
+
+.error {
+  @apply text-sm text-error;
+}

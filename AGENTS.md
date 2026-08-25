@@ -17,10 +17,12 @@ Coverage is NOT available: `@vitest/coverage-v8` is not installed, so `--coverag
 ## Commit workflow
 
 Husky runs on commit:
+
 - **pre-commit**: `npm test` — tests must pass.
 - **commit-msg**: commitlint enforces Conventional Commits, but the config allows an optional emoji prefix (e.g. `✨ feat: ...` or `feat: ...` both pass). Use the emoji format from `/commit-message`.
 
 Repo-local slash commands (`.opencode/commands/`):
+
 - `/component <desc>` — TDD component workflow: write test first in `tests/components/`, run expecting failure, build component, run expecting pass, then add a preview on `/preview`.
 - `/spec <idea>` — requires a CLEAN working tree (commit/stash first, it aborts otherwise). Creates a `opencode/feature/<slug>` branch and writes a spec to `_specs/<slug>.md` from `_specs/template.md`.
 - `/commit-message` — proposes a commit message from staged changes; asks before committing.
@@ -30,8 +32,9 @@ Repo-local slash commands (`.opencode/commands/`):
 
 - `app/(public)/` — no auth, no Navbar: splash `/`, `/login`, `/signup`, `/preview`. `/preview` is the UI gallery for new components.
 - `app/(dashboard)/` — authenticated pages wrapped with `<Navbar />`: `/heists`, `/heists/create`, `/heists/[id]` (dynamic route — `params` is a Promise, `await` it).
-- `components/<Name>/` — one folder per component: `<Name>.tsx`, `<Name>.module.css`, `index.ts` barrel. Current: `Navbar`, `Skeleton`, `Avatar`, `AuthForm`.
-- `tests/components/` — mirrors components (`Navbar.test.tsx`, `Avatar.test.tsx`, `AuthForm.test.tsx`).
+- `components/<Name>/` — one folder per component: `<Name>.tsx`, `<Name>.module.css`, `index.ts` barrel. Current: `Navbar`, `Skeleton`, `Avatar`, `AuthForm`, `UserProvider` (no `.module.css`; exports default provider + named `useUser` hook).
+- `tests/components/` — mirrors components (`Navbar.test.tsx`, `Avatar.test.tsx`, `AuthForm.test.tsx`, `UserProvider.test.tsx`).
+- `app/layout.tsx` mounts `<UserProvider>` at the root — read auth state via `useUser()` (`{ user, isLoading }`); don't call Firebase auth directly in pages.
 - `_specs/` — feature specs (see `/spec`). `_plans/` — implementation plans.
 
 ## Conventions
@@ -43,3 +46,8 @@ Repo-local slash commands (`.opencode/commands/`):
 - Style: no semicolons in `.tsx`/`.ts` (CSS files use them). `"use client"` for stateful components.
 - Client components read route params via `useParams()` from `next/navigation`; server components `await` the `params` Promise prop.
 - Tests: Vitest + Testing Library, jsdom, globals enabled. Existing tests import `describe/it/expect` explicitly — match the file you're editing. For `getByLabelText`, password inputs: the visibility-toggle button's `aria-label` also contains "password", so use an exact string (`getByLabelText("Password")`) not a regex.
+- Mocking `firebase/auth` in tests: `onAuthStateChanged(auth, cb)` receives the callback at args index `[1]`, and the mock must RETURN the unsubscribe fn (`mockReturnValue(unsubscribe)`) — calling it inside the implementation silently corrupts setup/cleanup counts.
+
+## Checking Documentation
+
+- **important** When implementing any lib/framework-specific feature, ALWAYS check the appropriate lib/framework documentation using Context7 MCP server before writing any code.

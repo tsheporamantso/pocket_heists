@@ -1,5 +1,8 @@
+"use client"
+
 // components
 import Navbar from "@/components/Navbar"
+import RouteGuard from "@/components/RouteGuard"
 
 export default function HeistsLayout({
   children,
@@ -7,9 +10,9 @@ export default function HeistsLayout({
   children: React.ReactNode
 }>) {
   return (
-    <>
+    <RouteGuard require="authenticated">
       <Navbar />
       <main>{children}</main>
-    </>
+    </RouteGuard>
   )
 }

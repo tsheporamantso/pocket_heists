@@ -1,0 +1,54 @@
+@reference "../../app/globals.css";
+
+.card {
+  @apply flex flex-col gap-3 rounded-lg bg-light p-4;
+}
+
+.titleLine {
+  @apply h-5 rounded bg-lighter;
+  width: 80%;
+}
+
+.details {
+  @apply flex flex-col gap-2;
+}
+
+.deadlineLine {
+  @apply h-3 rounded bg-lighter;
+  width: 60%;
+}
+
+.deadlineLineShort {
+  @apply h-3 rounded bg-lighter;
+  width: 40%;
+}
+
+.assigneeLine {
+  @apply h-3 rounded bg-lighter;
+  width: 70%;
+}
+
+.statusLine {
+  @apply h-3 rounded bg-lighter;
+  width: 30%;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.titleLine,
+.deadlineLine,
+.deadlineLineShort,
+.assigneeLine,
+.statusLine {
+  animation: shimmer 1.5s ease-in-out infinite;
+}

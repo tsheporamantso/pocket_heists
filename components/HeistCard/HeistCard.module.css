@@ -1,0 +1,61 @@
+@reference "../../app/globals.css";
+
+.card {
+  @apply flex flex-col gap-3 rounded-lg bg-light p-4 transition-all duration-200;
+}
+
+.cardInteractive:hover {
+  @apply scale-105 shadow-lg;
+}
+
+.titleLink {
+  @apply no-underline;
+}
+
+.title {
+  @apply text-heading font-semibold truncate;
+}
+
+.details {
+  @apply flex flex-col gap-2;
+}
+
+.deadline {
+  @apply flex flex-col gap-1;
+}
+
+.relativeDeadline {
+  @apply inline-flex items-center gap-1.5 text-body text-sm;
+}
+
+.absoluteDeadline {
+  @apply text-body text-xs;
+}
+
+.assignee {
+  @apply flex gap-2;
+}
+
+.label {
+  @apply inline-flex items-center gap-1 text-body text-sm;
+}
+
+.assigneeName {
+  @apply text-heading text-sm font-medium;
+}
+
+.status {
+  @apply mt-2;
+}
+
+.statusInProgress {
+  @apply text-amber-500 text-sm font-medium;
+}
+
+.statusSuccess {
+  @apply text-success text-sm font-medium;
+}
+
+.statusFailure {
+  @apply text-error text-sm font-medium;
+}
