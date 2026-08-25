@@ -1,0 +1,21 @@
+@reference "../../app/globals.css";
+
+.footer {
+  @apply mt-auto border-t border-lighter bg-light px-4 py-6;
+}
+
+.inner {
+  @apply mx-auto flex w-full max-w-3xl flex-col items-center gap-1;
+}
+
+.wordmark {
+  @apply flex items-center text-sm font-semibold tracking-wide text-heading;
+}
+
+.logo {
+  display: inline-block;
+}
+
+.copyright {
+  @apply text-xs text-body;
+}

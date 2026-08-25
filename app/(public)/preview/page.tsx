@@ -5,6 +5,7 @@ import Avatar from "@/components/Avatar";
 import CreateHeistForm from "@/components/CreateHeistForm";
 import HeistCard from "@/components/HeistCard";
 import HeistCardSkeleton from "@/components/HeistCardSkeleton";
+import Footer from "@/components/Footer";
 import type { Heist } from "@/types/firestore";
 
 function makeSampleExpiredHeists(): Heist[] {
@@ -63,6 +64,12 @@ export default function PreviewPage() {
             <HeistCard key={heist.id} heist={heist} variant="expired" />
           ))}
           <HeistCardSkeleton />
+        </div>
+      </div>
+      <div className="my-4">
+        <h3>Footer</h3>
+        <div className="my-4 max-w-5xl border border-dashed border-lighter p-2">
+          <Footer />
         </div>
       </div>
     </div>
