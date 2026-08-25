@@ -48,8 +48,8 @@ vi.mock("@/hooks/useHeists", () => ({
 
 // mock HeistCard component
 vi.mock("@/components/HeistCard", () => ({
-  default: ({ heist }: { heist: any }) => (
-    <div data-testid={`heist-card-${heist.id}`}>
+  default: ({ heist, variant }: { heist: any; variant?: string }) => (
+    <div data-testid={`heist-card-${heist.id}`} data-variant={variant ?? "active"}>
       <a href={`/heists/${heist.id}`}>{heist.title}</a>
       <span>{heist.assignedToCodename}</span>
     </div>
@@ -148,7 +148,7 @@ describe("HeistsPage", () => {
 
   it("renders skeleton loaders when loading", async () => {
     mockUseHeists.mockImplementation((mode: string) => {
-      if (mode === "active" || mode === "assigned") {
+      if (mode === "active" || mode === "assigned" || mode === "expired") {
         return { heists: [], isLoading: true, error: null }
       }
       return { heists: [], isLoading: false, error: null }
@@ -159,7 +159,7 @@ describe("HeistsPage", () => {
 
     await waitFor(() => {
       const skeletons = screen.getAllByTestId("heist-card-skeleton")
-      expect(skeletons.length).toBe(6) // 3 for active + 3 for assigned
+      expect(skeletons.length).toBe(9) // 3 per section × 3 sections
     })
   })
 
@@ -178,7 +178,7 @@ describe("HeistsPage", () => {
     })
   })
 
-  it("renders expired section as plain list", async () => {
+  it("renders expired section as cards in the grid", async () => {
     const expiredHeists = [
       {
         id: "expired-1",
@@ -187,17 +187,18 @@ describe("HeistsPage", () => {
         deadline: new Date("2025-01-01"),
         finalStatus: "failure",
       },
+      {
+        id: "expired-2",
+        title: "Another Expired Operation",
+        assignedToCodename: "Wraith",
+        deadline: new Date("2025-02-01"),
+        finalStatus: "success",
+      },
     ]
 
     mockUseHeists.mockImplementation((mode: string) => {
       if (mode === "expired") {
         return { heists: expiredHeists, isLoading: false, error: null }
-      }
-      if (mode === "active") {
-        return { heists: mockActiveHeists, isLoading: false, error: null }
-      }
-      if (mode === "assigned") {
-        return { heists: mockAssignedHeists, isLoading: false, error: null }
       }
       return { heists: [], isLoading: false, error: null }
     })
@@ -206,9 +207,33 @@ describe("HeistsPage", () => {
     render(<HeistsPage />)
 
     await waitFor(() => {
-      // Expired section should show plain list, not cards
+      const expiredCard = screen.getByTestId("heist-card-expired-1")
+      expect(expiredCard).toBeInTheDocument()
+      expect(screen.getByTestId("heist-card-expired-2")).toBeInTheDocument()
+      // expired cards receive the expired variant
+      expect(screen.getByTestId("heist-card-expired-1")).toHaveAttribute(
+        "data-variant",
+        "expired",
+      )
       expect(screen.getByText("Expired Operation")).toBeInTheDocument()
-      expect(screen.queryByTestId("heist-card-expired-1")).not.toBeInTheDocument()
     })
+  })
+
+  it("renders grid skeletons while the expired section is loading", async () => {
+    mockUseHeists.mockImplementation((mode: string) => {
+      if (mode === "expired") {
+        return { heists: [], isLoading: true, error: null }
+      }
+      return { heists: [], isLoading: false, error: null }
+    })
+
+    const HeistsPage = (await import("@/app/(dashboard)/heists/page")).default
+    render(<HeistsPage />)
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("heist-card-skeleton").length).toBe(3)
+    })
+    // generic full-width skeleton must not be used for the expired section
+    expect(screen.queryByTestId("skeleton")).not.toBeInTheDocument()
   })
 })

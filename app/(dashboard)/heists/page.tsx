@@ -1,6 +1,5 @@
 "use client"
 
-import Skeleton from "@/components/Skeleton"
 import HeistCard from "@/components/HeistCard"
 import HeistCardSkeleton from "@/components/HeistCardSkeleton"
 import useHeists, { type HeistsMode } from "@/hooks/useHeists"
@@ -27,17 +26,15 @@ const SECTIONS: Array<{ mode: HeistsMode; heading: string; className: string; em
   },
 ]
 
-function HeistTitles({ heists }: { heists: Heist[] }) {
-  return (
-    <ul className="flex flex-col gap-2">
-      {heists.map((heist) => (
-        <li key={heist.id}>{heist.title}</li>
-      ))}
-    </ul>
-  )
-}
-
-function HeistCardGrid({ heists, isLoading }: { heists: Heist[]; isLoading: boolean }) {
+function HeistCardGrid({
+  heists,
+  isLoading,
+  variant = "active",
+}: {
+  heists: Heist[]
+  isLoading: boolean
+  variant?: "active" | "expired"
+}) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
@@ -49,11 +46,13 @@ function HeistCardGrid({ heists, isLoading }: { heists: Heist[]; isLoading: bool
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+    <ul role="list" className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
       {heists.map((heist) => (
-        <HeistCard key={heist.id} heist={heist} />
+        <li key={heist.id}>
+          <HeistCard heist={heist} variant={variant} />
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }
 
@@ -79,19 +78,15 @@ function HeistSection({
         </p>
       )}
       {isLoading ? (
-        mode === "expired" ? (
-          <div className="my-4 max-w-3xl">
-            <Skeleton />
-          </div>
-        ) : (
-          <HeistCardGrid heists={[]} isLoading={true} />
-        )
+        <HeistCardGrid heists={[]} isLoading={true} />
       ) : heists.length === 0 ? (
         <p className="my-4 text-sm text-body">{emptyMessage}</p>
-      ) : mode === "expired" ? (
-        <HeistTitles heists={heists} />
       ) : (
-        <HeistCardGrid heists={heists} isLoading={false} />
+        <HeistCardGrid
+          heists={heists}
+          isLoading={false}
+          variant={mode === "expired" ? "expired" : "active"}
+        />
       )}
     </div>
   )

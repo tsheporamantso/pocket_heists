@@ -4,7 +4,7 @@
   @apply flex flex-col gap-3 rounded-lg bg-light p-4 transition-all duration-200;
 }
 
-.card:hover {
+.cardInteractive:hover {
   @apply scale-105 shadow-lg;
 }
 

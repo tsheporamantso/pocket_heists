@@ -17,6 +17,7 @@ vi.mock("next/link", () => ({
 // mock date formatting to avoid flaky tests
 vi.mock("@/lib/dateUtils", () => ({
   formatRelativeDeadline: vi.fn(() => "2 days left"),
+  formatRelativeExpiry: vi.fn(() => "Expired 2 days ago"),
   formatAbsoluteDeadline: vi.fn(() => "Jan 1, 2026"),
 }))
 
@@ -104,5 +105,56 @@ describe("HeistCard", () => {
     const card = screen.getByRole("article")
     // Check that the card has a class containing 'card' (CSS module hash)
     expect(card.className).toMatch(/card/)
+  })
+})
+
+describe("HeistCard expired variant", () => {
+  const expiredHeist = {
+    ...mockHeist,
+    deadline: new Date("2025-01-03T00:00:00Z"),
+    finalStatus: "success" as const,
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it("renders expiry phrasing instead of countdown", () => {
+    render(<HeistCard heist={expiredHeist} variant="expired" />)
+    expect(screen.getByText("Expired 2 days ago")).toBeInTheDocument()
+    expect(screen.queryByText("2 days left")).not.toBeInTheDocument()
+  })
+
+  it("still links the title to the details page", () => {
+    render(<HeistCard heist={expiredHeist} variant="expired" />)
+    const link = screen.getByRole("link", { name: "Operation Midnight" })
+    expect(link).toHaveAttribute("href", "/heists/heist-123")
+  })
+
+  it("shows Completed status for success", () => {
+    render(<HeistCard heist={expiredHeist} variant="expired" />)
+    const status = screen.getByText("Completed")
+    expect(status).toBeInTheDocument()
+    expect(status.className).toMatch(/statusSuccess/)
+  })
+
+  it("shows Failed status with error color for failure", () => {
+    const failedHeist = { ...expiredHeist, finalStatus: "failure" as const }
+    render(<HeistCard heist={failedHeist} variant="expired" />)
+    const status = screen.getByText("Failed")
+    expect(status).toBeInTheDocument()
+    expect(status.className).toMatch(/statusFailure/)
+  })
+
+  it("exposes the expired variant on the article", () => {
+    render(<HeistCard heist={expiredHeist} variant="expired" />)
+    const card = screen.getByRole("article")
+    expect(card).toHaveAttribute("data-variant", "expired")
+  })
+
+  it("defaults to the active variant when none is given", () => {
+    render(<HeistCard heist={mockHeist} />)
+    const card = screen.getByRole("article")
+    expect(card).toHaveAttribute("data-variant", "active")
   })
 })

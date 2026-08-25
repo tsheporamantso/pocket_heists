@@ -95,7 +95,8 @@ describe("CreateHeistForm", () => {
 
     expect(screen.getByLabelText("Title")).toBeInTheDocument()
     expect(screen.getByLabelText("Description")).toBeInTheDocument()
-    expect(await screen.findByLabelText("Assign Heist To")).toBeEnabled()
+    const select = await screen.findByLabelText("Assign Heist To")
+    await waitFor(() => expect(select).toBeEnabled())
     expect(
       screen.getByRole("button", { name: /create heist/i })
     ).toBeInTheDocument()

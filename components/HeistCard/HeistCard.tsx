@@ -6,11 +6,13 @@ import type { Heist } from "@/types/firestore";
 import {
   formatRelativeDeadline,
   formatAbsoluteDeadline,
+  formatRelativeExpiry,
 } from "@/lib/dateUtils";
 import styles from "./HeistCard.module.css";
 
 interface HeistCardProps {
   heist: Heist;
+  variant?: "active" | "expired";
 }
 
 function getStatusDisplay(finalStatus: Heist["finalStatus"]) {
@@ -24,13 +26,17 @@ function getStatusDisplay(finalStatus: Heist["finalStatus"]) {
   }
 }
 
-export default function HeistCard({ heist }: HeistCardProps) {
+export default function HeistCard({ heist, variant = "active" }: HeistCardProps) {
+  const isExpired = variant === "expired";
   const { text: statusText, className: statusClassName } = getStatusDisplay(
     heist.finalStatus,
   );
 
   return (
-    <article className={styles.card}>
+    <article
+      data-variant={variant}
+      className={isExpired ? styles.card : `${styles.card} ${styles.cardInteractive}`}
+    >
       <Link href={`/heists/${heist.id}`} className={styles.titleLink}>
         <h3 className={styles.title}>{heist.title}</h3>
       </Link>
@@ -52,7 +58,9 @@ export default function HeistCard({ heist }: HeistCardProps) {
         <div className={styles.deadline}>
           <span className={styles.relativeDeadline}>
             <Calendar size={14} aria-hidden />
-            {formatRelativeDeadline(heist.deadline)}
+            {isExpired
+              ? formatRelativeExpiry(heist.deadline)
+              : formatRelativeDeadline(heist.deadline)}
           </span>
           <span className={styles.absoluteDeadline}>
             {formatAbsoluteDeadline(heist.deadline)}
