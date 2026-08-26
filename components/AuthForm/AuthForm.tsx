@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, UserRoundPlus, Key } from "lucide-react"
 import Link from "next/link"
 import {
   createUserWithEmailAndPassword,
@@ -158,13 +158,23 @@ export default function AuthForm({ mode }: AuthFormProps) {
       )}
 
       <button type="submit" className="btn" disabled={isSubmitting}>
-        {isSubmitting
-          ? isLogin
-            ? "Logging in…"
-            : "Signing up…"
-          : isLogin
-            ? "Login"
-            : "Sign up"}
+        {isSubmitting ? (
+          isLogin ? (
+            "Logging in…"
+          ) : (
+            "Signing up…"
+          )
+        ) : isLogin ? (
+          <>
+            <Key size={18} aria-hidden />
+            Login
+          </>
+        ) : (
+          <>
+            <UserRoundPlus size={18} aria-hidden />
+            Sign up
+          </>
+        )}
       </button>
 
       <p className={styles.switch}>
