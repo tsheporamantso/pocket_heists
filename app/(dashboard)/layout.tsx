@@ -13,8 +13,10 @@ export default function HeistsLayout({
   return (
     <RouteGuard require="authenticated">
       <Navbar />
-      <main>{children}</main>
-      <Footer />
+      <main className="flex-1">
+        {children}
+        <Footer />
+      </main>
     </RouteGuard>
   )
 }

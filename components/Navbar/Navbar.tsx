@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Clock8, LogOut, Plus } from "lucide-react";
+import { Clock8, LogOut, PenLine } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "firebase/auth";
 import { useUser } from "@/components/UserProvider";
@@ -65,7 +65,7 @@ export default function Navbar() {
           <li>
             <Link href="/heists/create" className="btn">
               <span className="inline-flex items-center gap-1.5">
-                <Plus size={16} aria-hidden />
+                <PenLine size={16} aria-hidden />
                 Create Heist
               </span>
             </Link>
