@@ -4,7 +4,7 @@ export default function SignupPage() {
   return (
     <div className="center-content">
       <div className="page-content">
-        <h2 className="form-title">Signup for an Account</h2>
+        <h2 className="form-title">Sign up for an Account</h2>
         <AuthForm mode="signup" />
       </div>
     </div>
