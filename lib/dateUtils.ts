@@ -1,8 +1,10 @@
 const MS_PER_HOUR = 1000 * 60 * 60
 const MS_PER_DAY = MS_PER_HOUR * 24
 
-export function formatRelativeDeadline(deadline: Date): string {
-  const now = new Date()
+export function formatRelativeDeadline(
+  deadline: Date,
+  now: Date = new Date()
+): string {
   const diffMs = deadline.getTime() - now.getTime()
 
   if (diffMs <= 0) {
@@ -30,8 +32,10 @@ export function formatAbsoluteDeadline(deadline: Date): string {
   })
 }
 
-export function formatRelativeExpiry(deadline: Date): string {
-  const now = new Date()
+export function formatRelativeExpiry(
+  deadline: Date,
+  now: Date = new Date()
+): string {
   const elapsedMs = now.getTime() - deadline.getTime()
 
   if (elapsedMs <= 0) {
