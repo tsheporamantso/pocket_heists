@@ -17,7 +17,8 @@ export interface UseHeistResult {
   isLoading: boolean
   error: string | null
   notFound: boolean
-  isExpired: boolean
+  /** the clock all expiry derivations are measured against */
+  now: Date
 }
 
 export default function useHeist(id: string | undefined): UseHeistResult {
@@ -66,15 +67,14 @@ export default function useHeist(id: string | undefined): UseHeistResult {
       (err) => {
         console.error("Failed to listen to heist:", err)
         setError("Couldn't load this heist right now.")
+        setNotFound(false)
         setIsLoading(false)
       }
     )
   }, [id, user])
 
-  return useMemo(() => {
-    const isExpired =
-      heist !== null && heist.deadline.getTime() <= now.getTime()
-
-    return { heist, isLoading, error, notFound, isExpired }
-  }, [heist, isLoading, error, notFound, now])
+  return useMemo(
+    () => ({ heist, isLoading, error, notFound, now }),
+    [heist, isLoading, error, notFound, now]
+  )
 }

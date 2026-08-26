@@ -5,13 +5,15 @@ import type { Heist } from "@/types/firestore"
 // page imports
 import HeistDetailsPage from "@/app/(dashboard)/heists/[id]/page"
 
+const NOW = new Date("2026-08-24T12:00:00Z")
+
 const mocks = vi.hoisted(() => ({
   result: {
     heist: null as Heist | null,
     isLoading: true,
     error: null as string | null,
     notFound: false,
-    isExpired: false,
+    now: new Date("2026-08-24T12:00:00Z"),
   },
 }))
 
@@ -23,17 +25,21 @@ vi.mock("@/hooks/useHeist", () => ({
   default: () => mocks.result,
 }))
 
+function hours(delta: number) {
+  return new Date(NOW.getTime() + delta * 60 * 60 * 1000)
+}
+
 function makeHeist(overrides: Partial<Heist> = {}): Heist {
   return {
     id: "h-1",
-    createdAt: new Date("2026-08-22T12:00:00Z"),
+    createdAt: hours(-48),
     title: "Vault Break",
     description: "In and out.",
     createdBy: "uid-2",
     createdByCodename: "SilentCrimsonFox",
     assignedTo: "uid-1",
     assignedToCodename: "MidnightOwl",
-    deadline: new Date("2026-08-25T12:00:00Z"),
+    deadline: hours(24),
     finalStatus: null,
     ...overrides,
   }
@@ -45,7 +51,7 @@ beforeEach(() => {
     isLoading: true,
     error: null,
     notFound: false,
-    isExpired: false,
+    now: NOW,
   }
 })
 
@@ -63,7 +69,7 @@ describe("Heist details page", () => {
       isLoading: false,
       error: null,
       notFound: false,
-      isExpired: false,
+      now: NOW,
     }
     render(<HeistDetailsPage />)
 
@@ -73,17 +79,18 @@ describe("Heist details page", () => {
     expect(screen.getByText("In Progress")).toBeInTheDocument()
   })
 
-  it("wires the hook's expiry flag into the dossier status", () => {
+  it("threads the hook clock into the dossier so expiry drives status", () => {
     mocks.result = {
-      heist: makeHeist({ deadline: new Date("2026-08-20T12:00:00Z") }),
+      heist: makeHeist({ deadline: hours(-1) }),
       isLoading: false,
       error: null,
       notFound: false,
-      isExpired: true,
+      now: NOW,
     }
     render(<HeistDetailsPage />)
 
     expect(screen.getByText("Failed")).toBeInTheDocument()
+    expect(screen.getByText("Expired 1 hour ago")).toBeInTheDocument()
     expect(screen.queryByText("In Progress")).not.toBeInTheDocument()
   })
 
@@ -93,7 +100,7 @@ describe("Heist details page", () => {
       isLoading: false,
       error: null,
       notFound: true,
-      isExpired: false,
+      now: NOW,
     }
     render(<HeistDetailsPage />)
 
@@ -108,7 +115,7 @@ describe("Heist details page", () => {
       isLoading: false,
       error: "Couldn't load this heist right now.",
       notFound: false,
-      isExpired: false,
+      now: NOW,
     }
     render(<HeistDetailsPage />)
 

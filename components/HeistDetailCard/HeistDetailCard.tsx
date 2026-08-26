@@ -1,40 +1,41 @@
-import { Calendar, User } from "lucide-react";
-import type { Heist } from "@/types/firestore";
+import { Calendar, User } from "lucide-react"
+import type { Heist } from "@/types/firestore"
 import {
   formatAbsoluteDeadline,
   formatRelativeDeadline,
   formatRelativeExpiry,
-} from "@/lib/dateUtils";
-import styles from "./HeistDetailCard.module.css";
+} from "@/lib/dateUtils"
+import styles from "./HeistDetailCard.module.css"
 
 interface HeistDetailCardProps {
-  heist: Heist;
-  /** whether the deadline has passed — owned by the hook's ticking clock */
-  isExpired: boolean;
+  heist: Heist
+  /** the clock expiry derivations must agree with — owned by the hook */
+  now: Date
 }
 
 interface StatusDisplay {
-  text: string;
-  className: string;
+  text: string
+  className: string
 }
 
-function getStatusDisplay(heist: Heist, isExpired: boolean): StatusDisplay {
-  if (heist.finalStatus === "success") {
-    return { text: "Completed", className: styles.statusSuccess };
+function getStatusDisplay(
+  finalStatus: Heist["finalStatus"],
+  isExpired: boolean
+): StatusDisplay {
+  if (finalStatus === "success") {
+    return { text: "Completed", className: styles.statusSuccess }
   }
 
-  if (heist.finalStatus === "failure" || isExpired) {
-    return { text: "Failed", className: styles.statusFailure };
+  if (finalStatus === "failure" || isExpired) {
+    return { text: "Failed", className: styles.statusFailure }
   }
 
-  return { text: "In Progress", className: styles.statusInProgress };
+  return { text: "In Progress", className: styles.statusInProgress }
 }
 
-export default function HeistDetailCard({
-  heist,
-  isExpired,
-}: HeistDetailCardProps) {
-  const status = getStatusDisplay(heist, isExpired);
+export default function HeistDetailCard({ heist, now }: HeistDetailCardProps) {
+  const isExpired = heist.deadline.getTime() <= now.getTime()
+  const status = getStatusDisplay(heist.finalStatus, isExpired)
 
   return (
     <article className={styles.dossier}>
@@ -64,8 +65,8 @@ export default function HeistDetailCard({
             <dd className={styles.value}>
               <span className={styles.relativeDeadline}>
                 {isExpired
-                  ? formatRelativeExpiry(heist.deadline)
-                  : formatRelativeDeadline(heist.deadline)}
+                  ? formatRelativeExpiry(heist.deadline, now)
+                  : formatRelativeDeadline(heist.deadline, now)}
               </span>
               <span className={styles.absoluteDeadline}>
                 {formatAbsoluteDeadline(heist.deadline)}
@@ -75,5 +76,5 @@ export default function HeistDetailCard({
         </dl>
       </div>
     </article>
-  );
+  )
 }

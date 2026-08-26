@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
+import { describe, it, expect } from "vitest"
 
 // component imports
 import HeistDetailCard from "@/components/HeistDetailCard"
@@ -27,18 +27,9 @@ function makeHeist(overrides: Partial<Heist> = {}): Heist {
   }
 }
 
-beforeEach(() => {
-  vi.useFakeTimers()
-  vi.setSystemTime(NOW)
-})
-
-afterEach(() => {
-  vi.useRealTimers()
-})
-
 describe("HeistDetailCard", () => {
   it("renders title, description, assignee codename, and operative id", () => {
-    render(<HeistDetailCard heist={makeHeist()} isExpired={false} />)
+    render(<HeistDetailCard heist={makeHeist()} now={NOW} />)
 
     expect(
       screen.getByRole("heading", { name: "Vault Break" })
@@ -52,21 +43,18 @@ describe("HeistDetailCard", () => {
 
   it("shows the deadline in relative and absolute form while upcoming", () => {
     render(
-      <HeistDetailCard
-        heist={makeHeist({ deadline: hours(24) })}
-        isExpired={false}
-      />
+      <HeistDetailCard heist={makeHeist({ deadline: hours(24) })} now={NOW} />
     )
 
     expect(screen.getByText("1 day left")).toBeInTheDocument()
     expect(screen.getByText("Aug 25, 2026")).toBeInTheDocument()
   })
 
-  it("phrases an expired deadline relatively and absolutely", () => {
+  it("phrases an expired deadline relatively and absolutely against now", () => {
     render(
       <HeistDetailCard
         heist={makeHeist({ deadline: hours(-24) })}
-        isExpired={true}
+        now={NOW}
       />
     )
 
@@ -74,22 +62,22 @@ describe("HeistDetailCard", () => {
     expect(screen.getByText("Aug 23, 2026")).toBeInTheDocument()
   })
 
-  it("shows In Progress for an unresolved heist that is not expired", () => {
+  it("shows In Progress for an unresolved heist whose deadline is ahead of now", () => {
     render(
       <HeistDetailCard
         heist={makeHeist({ finalStatus: null })}
-        isExpired={false}
+        now={NOW}
       />
     )
 
     expect(screen.getByText("In Progress")).toBeInTheDocument()
   })
 
-  it("shows Failed for an unresolved heist whose deadline has passed", () => {
+  it("shows Failed for an unresolved heist whose deadline has passed now", () => {
     render(
       <HeistDetailCard
         heist={makeHeist({ finalStatus: null, deadline: hours(-2) })}
-        isExpired={true}
+        now={NOW}
       />
     )
 
@@ -97,11 +85,22 @@ describe("HeistDetailCard", () => {
     expect(screen.queryByText("In Progress")).not.toBeInTheDocument()
   })
 
+  it("treats a deadline exactly at now as expired", () => {
+    render(
+      <HeistDetailCard
+        heist={makeHeist({ finalStatus: null, deadline: NOW })}
+        now={NOW}
+      />
+    )
+
+    expect(screen.getByText("Failed")).toBeInTheDocument()
+  })
+
   it("shows Failed when the final status is failure", () => {
     render(
       <HeistDetailCard
         heist={makeHeist({ finalStatus: "failure" })}
-        isExpired={false}
+        now={NOW}
       />
     )
 
@@ -112,7 +111,7 @@ describe("HeistDetailCard", () => {
     render(
       <HeistDetailCard
         heist={makeHeist({ finalStatus: "success", deadline: hours(-48) })}
-        isExpired={true}
+        now={NOW}
       />
     )
 

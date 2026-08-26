@@ -68,4 +68,26 @@ describe("formatRelativeExpiry", () => {
     const past = new Date(Date.now() - 1 * 60 * 60 * 1000)
     expect(formatRelativeExpiry(past)).toBe("Expired 1 hour ago")
   })
+
+  it("measures against an explicitly provided now", () => {
+    const now = new Date("2026-08-24T12:00:00Z")
+    expect(
+      formatRelativeExpiry(new Date("2026-08-23T12:00:00Z"), now)
+    ).toBe("Expired 1 day ago")
+    expect(formatRelativeExpiry(new Date("2026-08-25T12:00:00Z"), now)).toBe(
+      "Expired"
+    )
+  })
+})
+
+describe("formatRelativeDeadline with explicit now", () => {
+  it("measures against the provided now instead of the wall clock", () => {
+    const now = new Date("2026-08-24T12:00:00Z")
+    expect(
+      formatRelativeDeadline(new Date("2026-08-25T12:00:00Z"), now)
+    ).toBe("1 day left")
+    expect(
+      formatRelativeDeadline(new Date("2026-08-20T12:00:00Z"), now)
+    ).toBe("Expired")
+  })
 })

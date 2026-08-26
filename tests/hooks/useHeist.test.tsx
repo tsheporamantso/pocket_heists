@@ -123,24 +123,29 @@ describe("useHeist", () => {
     expect(heist?.deadline).toBeInstanceOf(Date)
   })
 
-  it("derives isExpired from the deadline against the ticking clock", () => {
+  it("exposes its ticking clock so expiry stays consistent with formatting", () => {
     const { result } = renderHook(() => useHeist("h-9"))
 
     act(() =>
       nextHandler?.({ exists: true, ...makeRawDoc({ deadline: stamp(hours(0.5)) }) })
     )
-    expect(result.current.isExpired).toBe(false)
+    expect(result.current.now.getTime()).toBe(NOW.getTime())
 
     act(() => vi.advanceTimersByTime(60 * 60 * 1000))
-    expect(result.current.isExpired).toBe(true)
+    expect(result.current.now.getTime()).toBeGreaterThan(
+      hours(0.5).getTime()
+    )
   })
 
-  it("reports isExpired false without a loaded heist", () => {
+  it("clears notFound when a later update errors", () => {
     const { result } = renderHook(() => useHeist("h-missing"))
 
     act(() => nextHandler?.({ exists: false }))
+    expect(result.current.notFound).toBe(true)
 
-    expect(result.current.isExpired).toBe(false)
+    act(() => errorHandler?.(new Error("permission denied")))
+    expect(result.current.error).toBeTruthy()
+    expect(result.current.notFound).toBe(false)
   })
 
   it("flags notFound when the document does not exist", () => {

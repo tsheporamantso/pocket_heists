@@ -6,23 +6,21 @@ import { ArrowLeft } from "lucide-react"
 import HeistDetailCard from "@/components/HeistDetailCard"
 import Skeleton from "@/components/Skeleton"
 import useHeist from "@/hooks/useHeist"
+import styles from "./page.module.css"
 
 export default function HeistDetailsPage() {
   const { id } = useParams<{ id: string }>()
-  const { heist, isLoading, error, notFound, isExpired } = useHeist(id)
+  const { heist, isLoading, error, notFound, now } = useHeist(id)
 
   return (
     <div className="page-content">
-      <Link
-        href="/heists"
-        className="mb-6 inline-flex items-center gap-2 self-start rounded-lg border border-lighter px-4 py-2 text-sm font-semibold transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      >
+      <Link href="/heists" className={styles.backLink}>
         <ArrowLeft size={16} aria-hidden />
         Back to heists
       </Link>
 
       {error && (
-        <p role="alert" aria-live="polite" className="my-4 text-sm text-error">
+        <p role="alert" className="my-4 text-sm text-error">
           {error}
         </p>
       )}
@@ -34,7 +32,7 @@ export default function HeistDetailsPage() {
           This heist could not be found.
         </p>
       ) : (
-        heist && <HeistDetailCard heist={heist} isExpired={isExpired} />
+        heist && <HeistDetailCard heist={heist} now={now} />
       )}
     </div>
   )
