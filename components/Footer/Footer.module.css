@@ -1,21 +1,43 @@
 @reference "../../app/globals.css";
 
+/* dashed hairline echoes the infiltration route on the briefing panel */
 .footer {
-  @apply mt-auto border-t border-lighter bg-light px-4 py-6;
+  @apply mt-auto border-t border-dashed border-lighter bg-light;
 }
 
 .inner {
-  @apply mx-auto flex w-full max-w-3xl flex-col items-center gap-1;
+  @apply mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-6;
+}
+
+.top {
+  @apply flex flex-wrap items-center justify-between gap-x-6 gap-y-4;
+}
+
+.brand {
+  @apply flex flex-col gap-1 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary;
 }
 
 .wordmark {
-  @apply flex items-center text-sm font-semibold tracking-wide text-heading;
+  @apply flex items-center self-start text-sm font-semibold tracking-wide text-heading;
 }
 
 .logo {
   display: inline-block;
 }
 
-.copyright {
+.tagline {
   @apply text-xs text-body;
+}
+
+/* dead-drop chips — same language as the Log in button */
+.socials {
+  @apply flex list-none items-center gap-2;
+}
+
+.social {
+  @apply flex items-center justify-center rounded-lg border border-lighter p-2 text-body transition-colors hover:border-primary hover:text-heading focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
+}
+
+.copyright {
+  @apply border-t border-solid border-lighter pt-3 text-xs text-body;
 }
