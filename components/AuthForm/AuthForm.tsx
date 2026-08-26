@@ -166,12 +166,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
           )
         ) : isLogin ? (
           <>
-            <Key size={18} />
+            <Key size={18} aria-hidden />
             Login
           </>
         ) : (
           <>
-            <UserRoundPlus size={18} />
+            <UserRoundPlus size={18} aria-hidden />
             Sign up
           </>
         )}

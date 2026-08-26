@@ -39,7 +39,7 @@ export default function Home() {
           href="/login"
           className="rounded-lg border border-lighter px-4 py-2 font-semibold transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary flex items-center gap-2"
         >
-          <Key size={18} />
+          <Key size={18} aria-hidden />
           Log in
         </Link>
       </header>
@@ -59,10 +59,8 @@ export default function Home() {
         </p>
         <div className="mt-8">
           <Link href="/signup" className={styles.registerBtn}>
-            <>
-              <UserPlus2 size={18} />
-              Register
-            </>
+            <UserPlus2 size={18} aria-hidden />
+            Register
           </Link>
         </div>
 

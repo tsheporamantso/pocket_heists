@@ -31,18 +31,17 @@ describe("Footer", () => {
 
   it("links to GitHub, Facebook, and Instagram profiles", () => {
     render(<Footer />)
-    expect(screen.getByRole("link", { name: "GitHub" })).toHaveAttribute(
-      "href",
-      "https://github.com/tsheporamantso"
-    )
-    expect(screen.getByRole("link", { name: "Facebook" })).toHaveAttribute(
-      "href",
-      "https://facebook.com"
-    )
-    expect(screen.getByRole("link", { name: "Instagram" })).toHaveAttribute(
-      "href",
-      "https://instagram.com"
-    )
+    const expected = {
+      GitHub: "https://github.com/tsheporamantso",
+      Facebook: "https://facebook.com",
+      Instagram: "https://instagram.com",
+    }
+    for (const [name, href] of Object.entries(expected)) {
+      const link = screen.getByRole("link", { name })
+      expect(link).toHaveAttribute("href", href)
+      expect(link).toHaveAttribute("target", "_blank")
+      expect(link).toHaveAttribute("rel", "noreferrer")
+    }
   })
 
   it("does not turn the author name into a link", () => {

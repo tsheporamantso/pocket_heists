@@ -7,10 +7,8 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <main className="public flex-1">
-        {children}
-        <Footer />
-      </main>
+      <main className="public flex-1">{children}</main>
+      <Footer />
     </>
   )
 }
