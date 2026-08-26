@@ -12,7 +12,9 @@
 }
 
 .registerBtn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--color-primary);
   color: var(--color-heading);

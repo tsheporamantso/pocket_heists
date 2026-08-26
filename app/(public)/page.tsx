@@ -1,7 +1,7 @@
 // welcome page for visitors without an account — register is the primary action
 
 import Link from "next/link";
-import { Clock8 } from "lucide-react";
+import { Clock8, UserPlus2, Key } from "lucide-react";
 import styles from "./page.module.css";
 
 const STEPS = [
@@ -27,13 +27,19 @@ export default function Home() {
     <div className="mx-auto flex min-h-lvh w-full max-w-5xl flex-col px-6 py-8">
       <header className="flex items-center justify-between">
         <p className="text-lg font-bold tracking-tight">
-          P<Clock8 className="inline align-[-2px]" size={16} strokeWidth={2.75} />
+          P
+          <Clock8
+            className="inline align-[-2px]"
+            size={16}
+            strokeWidth={2.75}
+          />
           cket Heist
         </p>
         <Link
           href="/login"
-          className="rounded-lg border border-lighter px-4 py-2 font-semibold transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="rounded-lg border border-lighter px-4 py-2 font-semibold transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary flex items-center gap-2"
         >
+          <Key size={18} />
           Log in
         </Link>
       </header>
@@ -53,11 +59,17 @@ export default function Home() {
         </p>
         <div className="mt-8">
           <Link href="/signup" className={styles.registerBtn}>
-            Register
+            <>
+              <UserPlus2 size={18} />
+              Register
+            </>
           </Link>
         </div>
 
-        <section aria-label="Mission briefing" className={`${styles.panel} mt-16`}>
+        <section
+          aria-label="Mission briefing"
+          className={`${styles.panel} mt-16`}
+        >
           <div className={styles.panelBar}>
             <span>Briefing — office plan</span>
             <span>Floor 3 · 02:00 AM</span>
@@ -82,7 +94,13 @@ export default function Home() {
                   strokeWidth="1.5"
                 />
                 {/* door gap + swing */}
-                <rect x="7" y="140" width="7" height="34" fill="var(--color-dark)" />
+                <rect
+                  x="7"
+                  y="140"
+                  width="7"
+                  height="34"
+                  fill="var(--color-dark)"
+                />
                 <path
                   d="M10 140 A34 34 0 0 1 44 172"
                   fill="none"
@@ -90,14 +108,51 @@ export default function Home() {
                   strokeDasharray="2 4"
                 />
                 {/* desks */}
-                <rect x="60" y="60" width="70" height="26" rx="3" fill="var(--color-lighter)" stroke="rgba(153,161,175,0.25)" />
-                <rect x="170" y="92" width="70" height="26" rx="3" fill="var(--color-lighter)" stroke="rgba(153,161,175,0.25)" />
-                <rect x="95" y="132" width="80" height="26" rx="3" fill="var(--color-lighter)" stroke="rgba(153,161,175,0.25)" />
-                <ellipse cx="235" cy="55" rx="36" ry="20" fill="var(--color-lighter)" stroke="rgba(153,161,175,0.25)" />
+                <rect
+                  x="60"
+                  y="60"
+                  width="70"
+                  height="26"
+                  rx="3"
+                  fill="var(--color-lighter)"
+                  stroke="rgba(153,161,175,0.25)"
+                />
+                <rect
+                  x="170"
+                  y="92"
+                  width="70"
+                  height="26"
+                  rx="3"
+                  fill="var(--color-lighter)"
+                  stroke="rgba(153,161,175,0.25)"
+                />
+                <rect
+                  x="95"
+                  y="132"
+                  width="80"
+                  height="26"
+                  rx="3"
+                  fill="var(--color-lighter)"
+                  stroke="rgba(153,161,175,0.25)"
+                />
+                <ellipse
+                  cx="235"
+                  cy="55"
+                  rx="36"
+                  ry="20"
+                  fill="var(--color-lighter)"
+                  stroke="rgba(153,161,175,0.25)"
+                />
                 {/* cameras */}
-                <polygon points="160,13 138,58 182,58" fill="rgba(255,100,103,0.08)" />
+                <polygon
+                  points="160,13 138,58 182,58"
+                  fill="rgba(255,100,103,0.08)"
+                />
                 <circle cx="160" cy="13" r="4" fill="var(--color-error)" />
-                <polygon points="327,120 285,105 285,150" fill="rgba(255,100,103,0.08)" />
+                <polygon
+                  points="327,120 285,105 285,150"
+                  fill="rgba(255,100,103,0.08)"
+                />
                 <circle cx="327" cy="120" r="4" fill="var(--color-error)" />
                 {/* infiltration route */}
                 <path
@@ -109,14 +164,42 @@ export default function Home() {
                   strokeLinecap="round"
                 />
                 <circle cx="22" cy="156" r="3.5" fill="var(--color-body)" />
-                <text x="34" y="178" fontSize="9" letterSpacing="2" fill="var(--color-body)">
+                <text
+                  x="34"
+                  y="178"
+                  fontSize="9"
+                  letterSpacing="2"
+                  fill="var(--color-body)"
+                >
                   START
                 </text>
                 {/* vault */}
-                <circle className={styles.pulse} cx="295" cy="45" r="13" fill="none" stroke="var(--color-primary)" strokeWidth="1" />
-                <circle cx="295" cy="45" r="13" fill="none" stroke="var(--color-primary)" strokeWidth="1.5" />
+                <circle
+                  className={styles.pulse}
+                  cx="295"
+                  cy="45"
+                  r="13"
+                  fill="none"
+                  stroke="var(--color-primary)"
+                  strokeWidth="1"
+                />
+                <circle
+                  cx="295"
+                  cy="45"
+                  r="13"
+                  fill="none"
+                  stroke="var(--color-primary)"
+                  strokeWidth="1.5"
+                />
                 <circle cx="295" cy="45" r="4" fill="var(--color-primary)" />
-                <text x="295" y="74" textAnchor="middle" fontSize="9" letterSpacing="2" fill="var(--color-body)">
+                <text
+                  x="295"
+                  y="74"
+                  textAnchor="middle"
+                  fontSize="9"
+                  letterSpacing="2"
+                  fill="var(--color-body)"
+                >
                   VAULT
                 </text>
               </svg>
