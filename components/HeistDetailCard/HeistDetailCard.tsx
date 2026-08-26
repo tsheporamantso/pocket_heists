@@ -9,6 +9,8 @@ import styles from "./HeistDetailCard.module.css";
 
 interface HeistDetailCardProps {
   heist: Heist;
+  /** whether the deadline has passed — owned by the hook's ticking clock */
+  isExpired: boolean;
 }
 
 interface StatusDisplay {
@@ -16,12 +18,11 @@ interface StatusDisplay {
   className: string;
 }
 
-function getStatusDisplay(heist: Heist): StatusDisplay {
+function getStatusDisplay(heist: Heist, isExpired: boolean): StatusDisplay {
   if (heist.finalStatus === "success") {
     return { text: "Completed", className: styles.statusSuccess };
   }
 
-  const isExpired = heist.deadline.getTime() <= Date.now();
   if (heist.finalStatus === "failure" || isExpired) {
     return { text: "Failed", className: styles.statusFailure };
   }
@@ -29,9 +30,11 @@ function getStatusDisplay(heist: Heist): StatusDisplay {
   return { text: "In Progress", className: styles.statusInProgress };
 }
 
-export default function HeistDetailCard({ heist }: HeistDetailCardProps) {
-  const status = getStatusDisplay(heist);
-  const isExpired = heist.deadline.getTime() <= Date.now();
+export default function HeistDetailCard({
+  heist,
+  isExpired,
+}: HeistDetailCardProps) {
+  const status = getStatusDisplay(heist, isExpired);
 
   return (
     <article className={styles.dossier}>

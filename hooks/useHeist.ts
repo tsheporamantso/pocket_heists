@@ -10,11 +10,14 @@ import {
   type Heist,
 } from "@/types/firestore"
 
+const TICK_MS = 60 * 1000
+
 export interface UseHeistResult {
   heist: Heist | null
   isLoading: boolean
   error: string | null
   notFound: boolean
+  isExpired: boolean
 }
 
 export default function useHeist(id: string | undefined): UseHeistResult {
@@ -24,6 +27,13 @@ export default function useHeist(id: string | undefined): UseHeistResult {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
+  const [now, setNow] = useState(() => new Date())
+
+  // keep expiry-derived status fresh while the viewer sits on the page
+  useEffect(() => {
+    const tick = setInterval(() => setNow(new Date()), TICK_MS)
+    return () => clearInterval(tick)
+  }, [])
 
   useEffect(() => {
     if (!user || !id) {
@@ -61,8 +71,10 @@ export default function useHeist(id: string | undefined): UseHeistResult {
     )
   }, [id, user])
 
-  return useMemo(
-    () => ({ heist, isLoading, error, notFound }),
-    [heist, isLoading, error, notFound]
-  )
+  return useMemo(() => {
+    const isExpired =
+      heist !== null && heist.deadline.getTime() <= now.getTime()
+
+    return { heist, isLoading, error, notFound, isExpired }
+  }, [heist, isLoading, error, notFound, now])
 }

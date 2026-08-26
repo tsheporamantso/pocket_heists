@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
     isLoading: true,
     error: null as string | null,
     notFound: false,
+    isExpired: false,
   },
 }))
 
@@ -22,7 +23,7 @@ vi.mock("@/hooks/useHeist", () => ({
   default: () => mocks.result,
 }))
 
-function makeHeist(): Heist {
+function makeHeist(overrides: Partial<Heist> = {}): Heist {
   return {
     id: "h-1",
     createdAt: new Date("2026-08-22T12:00:00Z"),
@@ -34,6 +35,7 @@ function makeHeist(): Heist {
     assignedToCodename: "MidnightOwl",
     deadline: new Date("2026-08-25T12:00:00Z"),
     finalStatus: null,
+    ...overrides,
   }
 }
 
@@ -43,6 +45,7 @@ beforeEach(() => {
     isLoading: true,
     error: null,
     notFound: false,
+    isExpired: false,
   }
 })
 
@@ -55,19 +58,48 @@ describe("Heist details page", () => {
   })
 
   it("renders the dossier once the heist is loaded", () => {
-    mocks.result = { heist: makeHeist(), isLoading: false, error: null, notFound: false }
+    mocks.result = {
+      heist: makeHeist(),
+      isLoading: false,
+      error: null,
+      notFound: false,
+      isExpired: false,
+    }
     render(<HeistDetailsPage />)
 
     expect(
       screen.getByRole("heading", { name: "Vault Break" })
     ).toBeInTheDocument()
+    expect(screen.getByText("In Progress")).toBeInTheDocument()
+  })
+
+  it("wires the hook's expiry flag into the dossier status", () => {
+    mocks.result = {
+      heist: makeHeist({ deadline: new Date("2026-08-20T12:00:00Z") }),
+      isLoading: false,
+      error: null,
+      notFound: false,
+      isExpired: true,
+    }
+    render(<HeistDetailsPage />)
+
+    expect(screen.getByText("Failed")).toBeInTheDocument()
+    expect(screen.queryByText("In Progress")).not.toBeInTheDocument()
   })
 
   it("explains when the heist could not be found", () => {
-    mocks.result = { heist: null, isLoading: false, error: null, notFound: true }
+    mocks.result = {
+      heist: null,
+      isLoading: false,
+      error: null,
+      notFound: true,
+      isExpired: false,
+    }
     render(<HeistDetailsPage />)
 
-    expect(screen.getByText("This heist could not be found.")).toBeInTheDocument()
+    expect(
+      screen.getByText("This heist could not be found.")
+    ).toBeInTheDocument()
   })
 
   it("surfaces load errors via an alert", () => {
@@ -76,6 +108,7 @@ describe("Heist details page", () => {
       isLoading: false,
       error: "Couldn't load this heist right now.",
       notFound: false,
+      isExpired: false,
     }
     render(<HeistDetailsPage />)
 

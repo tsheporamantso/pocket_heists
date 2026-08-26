@@ -38,7 +38,7 @@ afterEach(() => {
 
 describe("HeistDetailCard", () => {
   it("renders title, description, assignee codename, and operative id", () => {
-    render(<HeistDetailCard heist={makeHeist()} />)
+    render(<HeistDetailCard heist={makeHeist()} isExpired={false} />)
 
     expect(
       screen.getByRole("heading", { name: "Vault Break" })
@@ -51,20 +51,36 @@ describe("HeistDetailCard", () => {
   })
 
   it("shows the deadline in relative and absolute form while upcoming", () => {
-    render(<HeistDetailCard heist={makeHeist({ deadline: hours(24) })} />)
+    render(
+      <HeistDetailCard
+        heist={makeHeist({ deadline: hours(24) })}
+        isExpired={false}
+      />
+    )
 
     expect(screen.getByText("1 day left")).toBeInTheDocument()
     expect(screen.getByText("Aug 25, 2026")).toBeInTheDocument()
   })
 
-  it("phrases the deadline as expired once the date has passed", () => {
-    render(<HeistDetailCard heist={makeHeist({ deadline: hours(-24) })} />)
+  it("phrases an expired deadline relatively and absolutely", () => {
+    render(
+      <HeistDetailCard
+        heist={makeHeist({ deadline: hours(-24) })}
+        isExpired={true}
+      />
+    )
 
     expect(screen.getByText("Expired 1 day ago")).toBeInTheDocument()
+    expect(screen.getByText("Aug 23, 2026")).toBeInTheDocument()
   })
 
-  it("shows In Progress for an unresolved heist with a future deadline", () => {
-    render(<HeistDetailCard heist={makeHeist({ finalStatus: null })} />)
+  it("shows In Progress for an unresolved heist that is not expired", () => {
+    render(
+      <HeistDetailCard
+        heist={makeHeist({ finalStatus: null })}
+        isExpired={false}
+      />
+    )
 
     expect(screen.getByText("In Progress")).toBeInTheDocument()
   })
@@ -73,6 +89,7 @@ describe("HeistDetailCard", () => {
     render(
       <HeistDetailCard
         heist={makeHeist({ finalStatus: null, deadline: hours(-2) })}
+        isExpired={true}
       />
     )
 
@@ -81,7 +98,12 @@ describe("HeistDetailCard", () => {
   })
 
   it("shows Failed when the final status is failure", () => {
-    render(<HeistDetailCard heist={makeHeist({ finalStatus: "failure" })} />)
+    render(
+      <HeistDetailCard
+        heist={makeHeist({ finalStatus: "failure" })}
+        isExpired={false}
+      />
+    )
 
     expect(screen.getByText("Failed")).toBeInTheDocument()
   })
@@ -90,6 +112,7 @@ describe("HeistDetailCard", () => {
     render(
       <HeistDetailCard
         heist={makeHeist({ finalStatus: "success", deadline: hours(-48) })}
+        isExpired={true}
       />
     )
 

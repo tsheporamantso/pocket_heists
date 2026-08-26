@@ -65,7 +65,3 @@
 .statusInProgress {
   @apply font-semibold text-amber-500;
 }
-
-.backLink {
-  @apply mb-6 inline-flex items-center gap-2 rounded-lg border border-lighter px-4 py-2 text-sm font-semibold text-heading transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
-}
