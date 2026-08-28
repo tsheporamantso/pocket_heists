@@ -84,7 +84,8 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 ```
 pocket-heist/
 ├── app/
-│   ├── (public)/          # No-auth pages: splash /, /login, /signup, /preview
+│   ├── (public)/          # No-auth pages: splash / and /preview
+│   ├── (auth)/            # No-auth pages: /login, /signup
 │   ├── (dashboard)/       # Auth-gated pages with Navbar: /heists, .../create, .../[id]
 │   ├── layout.tsx         # Root layout mounting <UserProvider />
 │   └── globals.css        # Tailwind v4 @theme tokens + global utilities
